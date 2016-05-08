@@ -177,7 +177,7 @@ class ValidBit {
 
 	static function ifSet($data=array(),$field="",$default=0){
 		if(isset($data[$field])){
-			return $field;
+			return $data[$field];
 		}
 		return $default;
 	}
