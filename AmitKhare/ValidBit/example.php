@@ -1,18 +1,21 @@
 <?php
-	use AmitKhare\ValidBit; // use namespace.
+    use AmitKhare\ValidBit\ValidBit as ValidBit; // use namespace.
+    
+    require("PATH-TO/"."validbit.php"); // only need to include if installed manually.
+    
+    $v = new ValidBit(); // instantiate ValidBit;
 
-	require(__DIR__."/validbit.php"); // only need to include if not installed via composer.
+	//  OR with database for unique field check
+    $v = new ValidBit($host,$username,$password,$dbname); // instantiate ValidBit With Database features;
 
-	$v = new ValidBit(); // instantiate ValidBit;
+    $v->setSource($_POST); // set data source array;
+    
+    $v->check("mobile","required|numeric|min:10|max:15");
+    $v->check("username","required|alphanum|unique:users.username|min:4|max:20");
+    $v->check("email","required|email|unique:users.email|min:4|max:100");
 
-	$v->setSource($_GET); // set data source array like = test.php?username=amit&email=amit@khare.co.in&mobile=910000000000
-
-	$v->check("username","required|string|min:4|max:10");
-	$v->check("email","required|email");
-	$v->check("mobile","required|numeric|min:4|max:10");
-
-	if($v->isValid()){
-		echo "PASS";
-	} else {
-	    print_r($v->getStatus());
-	}
+    if($v->isValid()){
+    	echo "PASS";
+    } else {
+        print_r($v->getStatus());
+    }

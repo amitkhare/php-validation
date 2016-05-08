@@ -21,18 +21,21 @@ Manual Install:
 # Usage:
     
     <?php
-        use AmitKhare\ValidBit; // use namespace.
+        use AmitKhare\ValidBit\ValidBit as ValidBit; // use namespace.
         
         require("PATH-TO/"."validbit.php"); // only need to include if installed manually.
         
         $v = new ValidBit(); // instantiate ValidBit;
+        
+        //  OR with database for unique field check
+        $v = new ValidBit($host,$username,$password,$dbname); // instantiate ValidBit With Database features;
 
         $v->setSource($_POST); // set data source array;
         
-        $v->check("username","required|string|min:4|max:10");
-        $v->check("email","required|email");
-        $v->check("mobile","required|numeric|min:4|max:10");
-        
+        $v->check("mobile","required|numeric|min:10|max:15");
+        $v->check("username","required|alphanum|unique:users.username|min:4|max:20");
+        $v->check("email","required|email|unique:users.email|min:4|max:100");
+    
         if($v->isValid()){
         	echo "PASS";
         } else {
@@ -52,3 +55,5 @@ Manual Install:
     > bool
     > min
     > max
+    > alphanum
+    > unique (avaiable only if instantiate ValidBit With Database);

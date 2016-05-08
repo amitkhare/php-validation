@@ -7,15 +7,42 @@ class ValidBit {
 	private $msgs;
 	private $source;
     private $sanitized = array();
+    private  $uniqueArray;
+    private  $dbConn;
+    private  $isConnected=false;
 
-	function __construct(){
+	function __construct($host=false,$username=false,$password=false,$dbname=false){
 		$this->msgs = false;
 		$this->code = 200;
+        if($host!==false && $username!==false && $password!==false && $dbname!==false){
+            $this->connect($host,$username,$password,$dbname);
+        }
 	}
 
 	public function setSource($source){
-		$this->source=$source;
-	}
+        $this->source = $source;
+    }
+
+    private function sanitizeField($field){
+        if($this->isConnected){
+            $safeField = $this->dbConn->real_escape_string(trim(strip_tags($this->source[$field])));
+        } else {
+            $safeField = filter_var($this->source[$field], FILTER_SANITIZE_STRING);
+        }
+        return $safeField;
+    }
+
+    private function connect($host="localhost",$username="root",$password="",$dbname="slimtestdb"){
+        $mysqli = @new \mysqli($host,$username,$password,$dbname);
+        /* check connection */
+        if (mysqli_connect_errno()) {
+            $this->setStatus(500,sprintf("Database Error: %s.", mysqli_connect_error()));
+            $this->isConnected=false;
+        } else {
+            $this->dbConn = $mysqli;
+            $this->isConnected=true;
+        }
+    }
 
 	public function check($field="",$rules="required|numeric|min:2|max:5"){
         $rules = explode("|", $rules);
@@ -29,6 +56,15 @@ class ValidBit {
                     $max = (explode("ax:",$minMax)) ? explode("ax:",$minMax)[1] : 0 ;
                 }
             }
+            foreach ($rules as $uniqueField) {
+                if(preg_match("/(unique\:)/", $uniqueField)){
+                    if($param = preg_split("/(unique\:)/", $uniqueField)){
+                        $param = $param[1];
+                        $this->uniqueArray[$field]['table']  = explode(".",$param)[0];
+                        $this->uniqueArray[$field]['column'] = explode(".",$param)[1];
+                    }
+                }
+            }
             foreach ($rules as $rule) {
                 $this->_fetchRule($field,$rule,$min,$max);
             }
@@ -37,6 +73,9 @@ class ValidBit {
     // /min\:[0-9]+/
 	private function  _fetchRule($field,$rule,$min=0,$max=0){
 		switch($rule){
+                case ( preg_match("/(unique\:)/", $rule ) == true):
+                    $this->isUnique($field,$this->uniqueArray[$field]['table'],$this->uniqueArray[$field]['column']);
+                    break;
                 case 'required':
                     $this->required($field);
                     break;
@@ -55,7 +94,11 @@ class ValidBit {
 
                 case 'string':
                     $this->validateString($field,$min,$max);
-                break;
+                    break;
+
+                case 'alphanum':
+                    $this->alphaNumeric($field,$min,$max);
+                    break;
 
                 case 'float':
                     $this->validateFloat($field);
@@ -168,6 +211,31 @@ class ValidBit {
         }
     }
 
+    private function alphaNumeric($field,$min=0,$max=0) {
+        if(isset($this->source[$field])) {
+
+            if(preg_match("/[^a-z_\.\-0-9]/i", $this->source[$field] ) == true) {
+                $this->setStatus(500, $field . ' is invalid string');
+                $this->sanitizeString($field);
+            } else {
+
+                if ($min!==0){
+                    if(strlen($this->source[$field]) < $min) {
+                        $this->setStatus(500,$field . ' is too short');
+                        $this->sanitizeString($field);
+                    }
+                }
+                if ($max!==0){
+                    if(strlen($this->source[$field]) > $max) {
+                        $this->setStatus(500,$field . ' is too long');
+                        $this->sanitizeString($field);
+                    }
+                }
+            }
+
+        }
+    }
+
     private function validateNumeric($field, $min=0, $max=0) {
 
         if(preg_match("/[^0-9]+/",$this->source[$field])) {
@@ -206,6 +274,15 @@ class ValidBit {
     private function validateBool($field) {
         filter_var($this->source[$field], FILTER_VALIDATE_BOOLEAN);{
             $this->setStatus(500,$field . ' is Invalid');
+        }
+    }
+
+    private  function isUnique($field,$table,$column){
+        if($this->isValid() && $this->isConnected) {
+            $query = mysqli_query($this->dbConn, "SELECT * FROM `$table` WHERE `$column`='".$this->sanitizeField($field)."'");
+            if(mysqli_num_rows($query) > 0){
+                $this->setStatus(500,$field . ' already exists');
+            }
         }
     }
 
