@@ -124,6 +124,10 @@ class ValidBit {
                     $this->alphaNumeric($field,$min,$max);
                     break;
 
+                case 'alphanumUnicode':
+                    $this->alphaNumericUnicode($field,$min,$max);
+                    break;
+
                 case 'float':
                     $this->validateFloat($field);
                     break;
@@ -257,6 +261,30 @@ class ValidBit {
                 }
             }
 
+        }
+    }
+
+    private function alphaNumericUnicode($field,$min=0,$max=0) {
+        if(isset($this->source[$field])) {
+
+            if(preg_match("[^a-z_\.\-0-9\x{4e00}-\x{9fa5}]/ui", $this->source[$field] ) == true) {
+                $this->setStatus(500, $field . ' is invalid string');
+                $this->sanitizeString($field);
+            } else {
+
+                if ($min!==0){
+                    if(strlen($this->source[$field]) < $min) {
+                        $this->setStatus(500,$field . ' is too short');
+                        $this->sanitizeString($field);
+                    }
+                }
+                if ($max!==0){
+                    if(strlen($this->source[$field]) > $max) {
+                        $this->setStatus(500,$field . ' is too long');
+                        $this->sanitizeString($field);
+                    }
+                }
+            }
         }
     }
 

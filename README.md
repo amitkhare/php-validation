@@ -56,4 +56,5 @@ Manual Install:
     > min
     > max
     > alphanum
+    > alphanumUnicode
     > unique (avaiable only if instantiate ValidBit With Database);
