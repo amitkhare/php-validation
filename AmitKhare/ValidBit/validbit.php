@@ -19,15 +19,23 @@ class ValidBit {
 
 	public function check($field="",$rules="required|numeric|min:2|max:5"){
         $rules = explode("|", $rules);
+        $min = $max =0;
         if($this->is_set($field)){
+            foreach ($rules as $minMax) {
+                if(preg_match("/min\:[0-9]+/",$minMax)){
+                    $min = (explode("n:",$minMax)) ? explode("in:",$minMax)[1] : 0 ;
+                }
+                if(preg_match("/max\:[0-9]+/",$minMax)){
+                    $max = (explode("ax:",$minMax)) ? explode("ax:",$minMax)[1] : 0 ;
+                }
+            }
             foreach ($rules as $rule) {
-                $this->_fetchRule($field,$rule);
+                $this->_fetchRule($field,$rule,$min,$max);
             }
         }
-
 	}
-
-	private function  _fetchRule($field,$rule){
+    // /min\:[0-9]+/
+	private function  _fetchRule($field,$rule,$min=0,$max=0){
 		switch($rule){
                 case 'required':
                     $this->required($field);
@@ -42,11 +50,11 @@ class ValidBit {
                     break;
 
                 case 'numeric':
-                    $this->validateNumeric($field,$min=0,$max=0);
+                    $this->validateNumeric($field,$min,$max);
                     break;
 
                 case 'string':
-                    $this->validateString($field,$min=0,$max=0);
+                    $this->validateString($field,$min,$max);
                 break;
 
                 case 'float':
@@ -145,11 +153,14 @@ class ValidBit {
                 $this->sanitizeString($field);
             }
 
-            if($min!==0 && $max!==0){
+            if ($min!==0){
                 if(strlen($this->source[$field]) < $min) {
                     $this->setStatus(500,$field . ' is too short');
                     $this->sanitizeString($field);
-                } elseif(strlen($this->source[$field]) > $max) {
+                }
+            }
+            if ($max!==0){
+                if(strlen($this->source[$field]) > $max) {
                     $this->setStatus(500,$field . ' is too long');
                     $this->sanitizeString($field);
                 }
@@ -158,15 +169,22 @@ class ValidBit {
     }
 
     private function validateNumeric($field, $min=0, $max=0) {
-        if($min!==0 && $max!==0){
-            if(filter_var($this->source[$field], FILTER_VALIDATE_INT, array("options" => array("min_range"=>$min, "max_range"=>$max)))===FALSE) {
-                $this->setStatus(500,$field . ' is an invalid number');
-                $this->sanitizeNumeric($field);
-            }
+
+        if(preg_match("/[^0-9]+/",$this->source[$field])) {
+            $this->setStatus(500,$field . ' is an invalid number');
+            $this->sanitizeNumeric($field);
         } else {
-            if(filter_var($this->source[$field], FILTER_VALIDATE_INT)===FALSE) {
-                $this->setStatus(500,$field . ' is an invalid number');
-                $this->sanitizeNumeric($field);
+            if ($max!==0){
+                if(strlen($this->source[$field]) > $max) {
+                    $this->setStatus(500,$field . ' is too long, it should not more than '.$max.' characters.');
+                    $this->sanitizeString($field);
+                }
+            }
+            if ($min!==0){
+                if(strlen($this->source[$field]) < $min) {
+                    $this->setStatus(500,$field . ' is too short, it should be at least '.$min.' characters long.');
+                    $this->sanitizeString($field);
+                }
             }
         }
     }

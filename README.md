@@ -50,3 +50,5 @@ Manual Install:
     > ipv4
     > ipv6
     > bool
+    > min
+    > max

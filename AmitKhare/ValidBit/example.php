@@ -5,7 +5,7 @@
 
 	$v = new ValidBit(); // instantiate ValidBit;
 
-	$v->setSource($_POST); // set data source array;
+	$v->setSource($_GET); // set data source array like = test.php?username=amit&email=amit@khare.co.in&mobile=910000000000
 
 	$v->check("username","required|string|min:4|max:10");
 	$v->check("email","required|email");
