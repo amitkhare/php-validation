@@ -4,6 +4,7 @@
 	require(__DIR__."/validbit.php"); // only need to include if not installed via composer.
 
 	$v = new ValidBit("localhost","slimtest","password","slimtest"); // instantiate ValidBit;
+	//$v = new ValidBit(); // instantiate ValidBit;
 
 	$v->setSource($_GET); // set data source array like = test.php?username=amit&email=amit@khare.co.in&mobile=910000000000
 

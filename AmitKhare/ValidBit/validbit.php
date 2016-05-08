@@ -33,7 +33,7 @@ class ValidBit {
     }
 
     private function connect($host="localhost",$username="root",$password="",$dbname="slimtestdb"){
-        $mysqli = @new \mysqli($host,$username,$password,$dbname);
+        $mysqli = new \mysqli($host,$username,$password,$dbname);
         /* check connection */
         if (mysqli_connect_errno()) {
             $this->setStatus(500,sprintf("Database Error: %s.", mysqli_connect_error()));
@@ -278,10 +278,14 @@ class ValidBit {
     }
 
     private  function isUnique($field,$table,$column){
-        if($this->isValid() && $this->isConnected) {
-            $query = mysqli_query($this->dbConn, "SELECT * FROM `$table` WHERE `$column`='".$this->sanitizeField($field)."'");
-            if(mysqli_num_rows($query) > 0){
-                $this->setStatus(500,$field . ' already exists');
+        if($this->isValid()) {
+            if($this->isConnected){
+                $query = mysqli_query($this->dbConn, "SELECT * FROM `$table` WHERE `$column`='".$this->sanitizeField($field)."'");
+                if(mysqli_num_rows($query) > 0){
+                    $this->setStatus(500,$field . ' already exists');
+                }
+            } else {
+                    $this->setStatus(500,' Database not connected. Database related rules will be unavailable.');
             }
         }
     }
