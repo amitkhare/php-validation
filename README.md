@@ -41,12 +41,12 @@ Manual Install:
 
 
 # Available Rules:
-> required
-> email
-> url
-> numeric
-> string
-> float
-> ipv4
-> ipv6
-> bool
+    > required
+    > email
+    > url
+    > numeric
+    > string
+    > float
+    > ipv4
+    > ipv6
+    > bool
