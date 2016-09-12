@@ -19,29 +19,29 @@ Manual Install:
     Extract it, require "PATH-TO/"."validbit.php" where you want to use it.
 
 # Usage:
-    
-    <?php
-        use AmitKhare\ValidBit\ValidBit as ValidBit; // use namespace.
-        
-        require("PATH-TO/"."validbit.php"); // only need to include if installed manually.
-        
-        $v = new ValidBit(); // instantiate ValidBit;
-        
-        //  OR with database for unique field check
-        $v = new ValidBit($host,$username,$password,$dbname); // instantiate ValidBit With Database features;
+```sh
+<?php
+use AmitKhare\ValidBit\ValidBit as ValidBit; // use namespace.
 
-        $v->setSource($_POST); // set data source array;
-        
-        $v->check("mobile","required|numeric|min:10|max:15");
-        $v->check("username","required|alphanum|unique:users.username|min:4|max:20");
-        $v->check("email","required|email|unique:users.email|min:4|max:100");
-    
-        if($v->isValid()){
-        	echo "PASS";
-        } else {
-            print_r($v->getStatus());
-        }
+require("PATH-TO/"."validbit.php"); // only need to include if installed manually.
 
+$v = new ValidBit(); // instantiate ValidBit;
+
+//  OR with database for unique field check
+$v = new ValidBit($host,$username,$password,$dbname); // instantiate ValidBit With Database features;
+
+$v->setSource($_POST); // set data source array;
+
+$v->check("mobile","required|numeric|min:10|max:15");
+$v->check("username","required|alphanum|unique:users.username|min:4|max:20");
+$v->check("email","required|email|unique:users.email|min:4|max:100");
+
+if($v->isValid()){
+echo "PASS";
+} else {
+print_r($v->getStatus());
+}
+```
 
 # Available Rules:
     > required
