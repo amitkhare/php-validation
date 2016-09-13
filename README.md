@@ -1,24 +1,24 @@
 # amitkhare/validbit
 Validbit is an easy to use PHP validation library
 
-# Install
+## Install
 
 Run this command from the directory in which you want to install.
 
-Via Composer:
+### Via Composer:
 
     php composer.phar require amitkhare/validbit
 
-Via Git:
+### Via Git:
 
     git clone https://github.com/amitkhare/validbit.git
 
-Manual Install:
+### Manual Install:
 
     Download: https://github.com/amitkhare/validbit/archive/master.zip
     Extract it, require "PATH-TO/"."validbit.php" where you want to use it.
 
-# Usage:
+## Usage:
 ```sh
 <?php
 use AmitKhare\ValidBit; // use namespace.
@@ -43,7 +43,7 @@ if($v->isValid()){
 }
 ```
 
-# Available Rules:
+## Available Rules:
     > required
     > email
     > url
