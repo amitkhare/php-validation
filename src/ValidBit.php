@@ -234,7 +234,7 @@ class ValidBit {
     private function alpha($field,$min=0,$max=0) {
         if(isset($this->source[$field])) {
             if(preg_match("/[^a-z\s]/i", $this->source[$field] ) == true) {
-                $this->setStatus(500, $field . ' is invalid string');
+                $this->setStatus(500, $field . ' is invalid.');
                 $this->sanitizeString($field);
             } else {
                 if ($min!==0){
