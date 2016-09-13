@@ -21,7 +21,7 @@ Manual Install:
 # Usage:
 ```sh
 <?php
-use AmitKhare\ValidBit\ValidBit as ValidBit; // use namespace.
+use AmitKhare\ValidBit; // use namespace.
 
 require("PATH-TO/"."validbit.php"); // only need to include if installed manually.
 
