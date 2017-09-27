@@ -60,17 +60,19 @@ class ValidBit {
             $this->isConnected=true;
         }
     }
-    public function match($field1="",$field2="",$rules="required"){
+    public function match($field1="",$field2="",$rules=null){
         
-        $this->check($field1,$rules);
-        $this->check($field2,$rules);
+        if($rules){
+            $this->check($field1,$rules);
+            $this->check($field2,$rules);
+        }
         
         if($this->source[$field1] != $this->source[$field2]){
             $this->setStatus(500,sprintf("The `%s` field doesn't match with `%s`.", str_replace("_"," ",ucfirst($field1)),str_replace("_"," ",ucfirst($field2))));
         }
         
     }
-	public function check($field="",$rules="required|min:1|max:50"){
+	public function check($field="",$rules="required|numeric|min:1|max:50"){
         $rules = explode("|", $rules);
         $min = $max =0;
         if($this->is_set($field)){
