@@ -91,13 +91,32 @@ class ValidBit {
                     }
                 }
             }
+            
+            if($min > 0 || $max > 0){
+                $this->minMax($field,$min,$max);
+            }
+            
             foreach ($rules as $rule) {
-                $this->_fetchRule($field,$rule,$min,$max);
+                $this->_fetchRule($field,$rule);
+            }
+        }
+	}
+	private function minMax($field,$min=0,$max=0){
+	    if ($max>0 && $max>=$min){
+            if(strlen($this->source[$field]) > $max) {
+                $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is too long, it should not more than '.$max.' characters.');
+                $this->sanitizeString($field);
+            }
+        }
+        if ($min>0 && $min <= $max){
+            if(strlen($this->source[$field]) < $min) {
+                $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is too short, it should be at least '.$min.' characters long.');
+                $this->sanitizeString($field);
             }
         }
 	}
     // /min\:[0-9]+/
-	private function  _fetchRule($field,$rule,$min=0,$max=0){
+	private function  _fetchRule($field,$rule){
 		switch($rule){
                 case ( preg_match("/(unique\:)/", $rule ) == true):
                     $this->isUnique($field,$this->uniqueArray[$field]['table'],$this->uniqueArray[$field]['column']);
@@ -112,19 +131,19 @@ class ValidBit {
                     $this->validateUrl($field);
                     break;
                 case 'numeric':
-                    $this->validateNumeric($field,$min,$max);
+                    $this->validateNumeric($field);
                     break;
                 case 'string':
-                    $this->validateString($field,$min,$max);
+                    $this->validateString($field);
                     break;
                 case 'alpha':
-                    $this->alpha($field,$min,$max);
+                    $this->alpha($field);
                     break;
                 case 'alphanum':
-                    $this->alphaNumeric($field,$min,$max);
+                    $this->alphaNumeric($field);
                     break;
                 case 'alphanumUnicode':
-                    $this->alphaNumericUnicode($field,$min,$max);
+                    $this->alphaNumericUnicode($field);
                     break;
                 case 'float':
                     $this->validateFloat($field);
@@ -199,23 +218,11 @@ class ValidBit {
             $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is an invalid float');
         }
     }
-    private function validateString($field,$min=0,$max=0) {
+    private function validateString($field) {
         if(isset($this->source[$field])) {
             if(!is_string($this->source[$field])) {
                 $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is invalid string');
                 $this->sanitizeString($field);
-            }
-            if ($min!==0){
-                if(strlen($this->source[$field]) < $min) {
-                    $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is too short');
-                    $this->sanitizeString($field);
-                }
-            }
-            if ($max!==0){
-                if(strlen($this->source[$field]) > $max) {
-                    $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is too long');
-                    $this->sanitizeString($field);
-                }
             }
         }
     }
@@ -224,19 +231,6 @@ class ValidBit {
             if(preg_match("/[^a-z_\.\-0-9\s]/i", $this->source[$field] ) == true) {
                 $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is invalid string');
                 $this->sanitizeString($field);
-            } else {
-                if ($min!==0){
-                    if(strlen($this->source[$field]) < $min) {
-                        $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is too short');
-                        $this->sanitizeString($field);
-                    }
-                }
-                if ($max!==0){
-                    if(strlen($this->source[$field]) > $max) {
-                        $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is too long');
-                        $this->sanitizeString($field);
-                    }
-                }
             }
         }
     }
@@ -246,19 +240,6 @@ class ValidBit {
             if(preg_match("/[^a-z\s]/i", $this->source[$field] ) == true) {
                 $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is invalid.');
                 $this->sanitizeString($field);
-            } else {
-                if ($min!==0){
-                    if(strlen($this->source[$field]) < $min) {
-                        $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is too short');
-                        $this->sanitizeString($field);
-                    }
-                }
-                if ($max!==0){
-                    if(strlen($this->source[$field]) > $max) {
-                        $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is too long');
-                        $this->sanitizeString($field);
-                    }
-                }
             }
         }
     }
@@ -267,19 +248,6 @@ class ValidBit {
             if(preg_match("[^a-z_\.\-0-9\x{4e00}-\x{9fa5}]/ui", $this->source[$field] ) == true) {
                 $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is invalid string');
                 $this->sanitizeString($field);
-            } else {
-                if ($min!==0){
-                    if(strlen($this->source[$field]) < $min) {
-                        $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is too short');
-                        $this->sanitizeString($field);
-                    }
-                }
-                if ($max!==0){
-                    if(strlen($this->source[$field]) > $max) {
-                        $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is too long');
-                        $this->sanitizeString($field);
-                    }
-                }
             }
         }
     }
@@ -287,19 +255,6 @@ class ValidBit {
         if(preg_match("/[^0-9]+/",$this->source[$field])) {
             $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is an invalid number');
             $this->sanitizeNumeric($field);
-        } else {
-            if ($max!==0){
-                if(strlen($this->source[$field]) > $max) {
-                    $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is too long, it should not more than '.$max.' characters.');
-                    $this->sanitizeString($field);
-                }
-            }
-            if ($min!==0){
-                if(strlen($this->source[$field]) < $min) {
-                    $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is too short, it should be at least '.$min.' characters long.');
-                    $this->sanitizeString($field);
-                }
-            }
         }
     }
     private function validateUrl($field) {
