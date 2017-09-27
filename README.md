@@ -1,6 +1,6 @@
 # amitkhare/validbit
 Validbit is an easy to use PHP validation library
-### This package is abandoned and no longer maintained. The author suggests using the https://github.com/amitkhare/easy-validation package instead.
+### This package is abandoned and no longer maintained. Use https://github.com/amitkhare/easy-validation package instead.
 ## Install
 
 Run this command from the directory in which you want to install.
