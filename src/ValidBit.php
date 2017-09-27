@@ -60,6 +60,16 @@ class ValidBit {
             $this->isConnected=true;
         }
     }
+    public function match($field1="",$field2="",$rules="required"){
+        
+        $this->check($field1,$rules);
+        $this->check($field2,$rules);
+        
+        if($this->source[$field1] != $this->source[$field2]){
+            $this->setStatus(500,sprintf("The `%s` field doesn't match with `%s`.", str_replace("_"," ",ucfirst($field1)),str_replace("_"," ",ucfirst($field2))));
+        }
+        
+    }
 	public function check($field="",$rules="required|numeric|min:2|max:5"){
         $rules = explode("|", $rules);
         $min = $max =0;
@@ -164,46 +174,46 @@ class ValidBit {
         if(isset($this->source[$field])){
             return true;
         }else {
-            $this->setStatus(500,sprintf("The `%s` field is not set.", $field));
+            $this->setStatus(500,sprintf("The `%s` field is not set.", str_replace("_"," ",ucfirst($field)) ));
         }
     }
     private function required($field){
         if(!isset($this->source[$field])){
-            $this->setStatus(500,sprintf("The `%s` field is not set.", $field));
+            $this->setStatus(500,sprintf("The `%s` field is not set.", str_replace("_"," ",ucfirst($field))));
         } elseif(empty($this->source[$field]) || $this->source[$field]=="" || strlen($this->source[$field]) == 0){
-            $this->setStatus(500,sprintf("The `%s` field is required.", $field));
+            $this->setStatus(500,sprintf("The `%s` field is required.", str_replace("_"," ",ucfirst($field))));
         }
     }
     private function validateIpv4($field) {
         if(filter_var($this->source[$field], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) === FALSE) {
-            $this->setStatus(500,$field . ' is not a valid IPv4');
+            $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is not a valid IPv4');
         }
     }
     public function validateIpv6($field) {
         if(filter_var($this->source[$field], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) === FALSE) {
-            $this->setStatus(500,$field . ' is not a valid IPv6');
+            $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is not a valid IPv6');
         }
     }
     private function validateFloat($field) {
         if(filter_var($this->source[$field], FILTER_VALIDATE_FLOAT) === false) {
-            $this->setStatus(500,$field . ' is an invalid float');
+            $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is an invalid float');
         }
     }
     private function validateString($field,$min=0,$max=0) {
         if(isset($this->source[$field])) {
             if(!is_string($this->source[$field])) {
-                $this->setStatus(500, $field . ' is invalid string');
+                $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is invalid string');
                 $this->sanitizeString($field);
             }
             if ($min!==0){
                 if(strlen($this->source[$field]) < $min) {
-                    $this->setStatus(500,$field . ' is too short');
+                    $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is too short');
                     $this->sanitizeString($field);
                 }
             }
             if ($max!==0){
                 if(strlen($this->source[$field]) > $max) {
-                    $this->setStatus(500,$field . ' is too long');
+                    $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is too long');
                     $this->sanitizeString($field);
                 }
             }
@@ -212,18 +222,18 @@ class ValidBit {
     private function alphaNumeric($field,$min=0,$max=0) {
         if(isset($this->source[$field])) {
             if(preg_match("/[^a-z_\.\-0-9\s]/i", $this->source[$field] ) == true) {
-                $this->setStatus(500, $field . ' is invalid string');
+                $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is invalid string');
                 $this->sanitizeString($field);
             } else {
                 if ($min!==0){
                     if(strlen($this->source[$field]) < $min) {
-                        $this->setStatus(500,$field . ' is too short');
+                        $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is too short');
                         $this->sanitizeString($field);
                     }
                 }
                 if ($max!==0){
                     if(strlen($this->source[$field]) > $max) {
-                        $this->setStatus(500,$field . ' is too long');
+                        $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is too long');
                         $this->sanitizeString($field);
                     }
                 }
@@ -234,18 +244,18 @@ class ValidBit {
     private function alpha($field,$min=0,$max=0) {
         if(isset($this->source[$field])) {
             if(preg_match("/[^a-z\s]/i", $this->source[$field] ) == true) {
-                $this->setStatus(500, $field . ' is invalid.');
+                $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is invalid.');
                 $this->sanitizeString($field);
             } else {
                 if ($min!==0){
                     if(strlen($this->source[$field]) < $min) {
-                        $this->setStatus(500,$field . ' is too short');
+                        $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is too short');
                         $this->sanitizeString($field);
                     }
                 }
                 if ($max!==0){
                     if(strlen($this->source[$field]) > $max) {
-                        $this->setStatus(500,$field . ' is too long');
+                        $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is too long');
                         $this->sanitizeString($field);
                     }
                 }
@@ -255,18 +265,18 @@ class ValidBit {
     private function alphaNumericUnicode($field,$min=0,$max=0) {
         if(isset($this->source[$field])) {
             if(preg_match("[^a-z_\.\-0-9\x{4e00}-\x{9fa5}]/ui", $this->source[$field] ) == true) {
-                $this->setStatus(500, $field . ' is invalid string');
+                $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is invalid string');
                 $this->sanitizeString($field);
             } else {
                 if ($min!==0){
                     if(strlen($this->source[$field]) < $min) {
-                        $this->setStatus(500,$field . ' is too short');
+                        $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is too short');
                         $this->sanitizeString($field);
                     }
                 }
                 if ($max!==0){
                     if(strlen($this->source[$field]) > $max) {
-                        $this->setStatus(500,$field . ' is too long');
+                        $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is too long');
                         $this->sanitizeString($field);
                     }
                 }
@@ -275,18 +285,18 @@ class ValidBit {
     }
     private function validateNumeric($field, $min=0, $max=0) {
         if(preg_match("/[^0-9]+/",$this->source[$field])) {
-            $this->setStatus(500,$field . ' is an invalid number');
+            $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is an invalid number');
             $this->sanitizeNumeric($field);
         } else {
             if ($max!==0){
                 if(strlen($this->source[$field]) > $max) {
-                    $this->setStatus(500,$field . ' is too long, it should not more than '.$max.' characters.');
+                    $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is too long, it should not more than '.$max.' characters.');
                     $this->sanitizeString($field);
                 }
             }
             if ($min!==0){
                 if(strlen($this->source[$field]) < $min) {
-                    $this->setStatus(500,$field . ' is too short, it should be at least '.$min.' characters long.');
+                    $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is too short, it should be at least '.$min.' characters long.');
                     $this->sanitizeString($field);
                 }
             }
@@ -294,19 +304,19 @@ class ValidBit {
     }
     private function validateUrl($field) {
         if(filter_var($this->source[$field], FILTER_VALIDATE_URL) === FALSE) {
-            $this->setStatus(500,$field . ' is not a valid URL');
+            $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is not a valid URL');
             $this->sanitizeUrl($field);
         }
     }
     private function validateEmail($field) {
         if(filter_var($this->source[$field], FILTER_VALIDATE_EMAIL) === FALSE) {
-            $this->setStatus(500,$field . ' is not a valid email address');
+            $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is not a valid email address');
             $this->sanitizeEmail($field);
         }
     }
     private function validateBool($field) {
         filter_var($this->source[$field], FILTER_VALIDATE_BOOLEAN);{
-            $this->setStatus(500,$field . ' is Invalid');
+            $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' is Invalid');
         }
     }
     private  function isUnique($field,$table,$column){
@@ -314,7 +324,7 @@ class ValidBit {
             if($this->isConnected){
                 $query = mysqli_query($this->dbConn, "SELECT * FROM `$table` WHERE `$column`='".$this->sanitizeField($field)."'");
                 if(mysqli_num_rows($query) > 0){
-                    $this->setStatus(500,$field . ' already exists');
+                    $this->setStatus(500,str_replace("_"," ",ucfirst($field)) . ' already exists');
                 }
             } else {
                     $this->setStatus(500,' Database not connected. Database related rules will be unavailable.');
