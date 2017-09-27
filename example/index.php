@@ -14,6 +14,8 @@
     $v->check("username","required|alphanum|unique:users.username|min:4|max:20");
     $v->check("email","required|email|unique:users.email|min:4|max:100");
     
+    $v->match("password","password_confirm","required|min:6|max:25");
+    
     if(!$v->isValid()){
     	print_r($v->getStatus());
     }
