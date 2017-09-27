@@ -70,7 +70,7 @@ class ValidBit {
         }
         
     }
-	public function check($field="",$rules="required|numeric|min:2|max:5"){
+	public function check($field="",$rules="required|min:1|max:50"){
         $rules = explode("|", $rules);
         $min = $max =0;
         if($this->is_set($field)){
