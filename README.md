@@ -35,11 +35,10 @@ $v->setSource($_POST); // set data source array;
 $v->check("mobile","required|numeric|min:10|max:15");
 $v->check("username","required|alphanum|unique:users.username|min:4|max:20");
 $v->check("email","required|email|unique:users.email|min:4|max:100");
+
 $v->match("password","password_confirm","required|min:6|max:25");
 
-if($v->isValid()){
-    echo "PASS";
-} else {
+if(!$v->isValid()){
     print_r($v->getStatus());
 }
 ```
